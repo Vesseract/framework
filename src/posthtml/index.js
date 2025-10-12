@@ -10,6 +10,7 @@ import posthtmlPostcss from 'posthtml-postcss'
 import expandLinkTag from './plugins/expandLinkTag.js'
 import envAttributes from './plugins/envAttributes.js'
 import { getPosthtmlOptions } from './defaultConfig.js'
+import templateTag from '../transformers/template.js'
 
 // PostCSS
 import tailwindcss from 'tailwindcss'
@@ -107,20 +108,20 @@ export async function process(html = '', config = {}) {
     envTags(config.env),
     envAttributes(config.env),
     expandLinkTag(),
-    postcssPlugin,
     fetchPlugin,
     components(componentsConfig),
+    templateTag(),
     expandLinkTag(),
-    postcssPlugin,
     envTags(config.env),
     envAttributes(config.env),
     ...get(
       config,
       'posthtml.plugins.after',
       beforePlugins.length > 0
-        ? []
-        : get(config, 'posthtml.plugins', [])
+      ? []
+      : get(config, 'posthtml.plugins', [])
     ),
+    postcssPlugin,
   ])
     .process(html, posthtmlOptions)
     .then(result => ({
